@@ -32,3 +32,64 @@ The project follows a microservices architecture, where each service is responsi
 ## Monitoring and Logging
 - **Logging**: All server errors are sent to **Elasticsearch** for logging and analysis.
 - **Monitoring**: **Kibana** is used for monitoring application logs and system performance.
+
+---
+# Inter Process Communication
+
+
+### 1. **Notification Service**
+   - **Receives** messages from:
+     - **Auth Service**: Likely to notify users about registration or login.
+     - **Order Service**: For order confirmations or completion notifications.
+     - **Chat Service**: Possibly for new messages or communication alerts.
+   - **Sends** messages to:
+     - No outgoing communication indicated.
+
+### 2. **Auth Service**
+   - **Sends** messages to:
+     - **Notification Service**: Triggers notifications for authentication-related events (e.g., registration confirmation).
+     - **Users Service**: To interact with user profiles, possibly for user verification.
+   - **Receives** from:
+     - No incoming communication indicated.
+
+### 3. **Users Service**
+   - **Sends** messages to:
+     - **Gig Service**: Likely to provide user information when gigs are created or updated.
+     - **Order Service**: Possibly to handle user-related actions when placing or updating orders.
+     - **Review Service**: To provide user information when reviews are being created.
+   - **Receives** messages from:
+     - **Auth Service**: For authentication and user profile actions.
+     - **Gig Service**: When gig actions require updating user-related data.
+
+### 4. **Gig Service**
+   - **Sends** messages to:
+     - **Users Service**: Likely to fetch user data when creating or updating a gig.
+   - **Receives** messages from:
+     - **Users Service**: For user-related data during gig creation.
+     - **Order Service**: For gig updates when orders are placed.
+     - **Review Service**: To fetch gig details when reviews are left.
+
+### 5. **Chat Service**
+   - **Sends** messages to:
+     - **Notification Service**: Likely to notify users of new messages.
+   - **Receives** from:
+     - No incoming communication indicated.
+
+### 6. **Order Service**
+   - **Sends** messages to:
+     - **Users Service**: To handle user-related actions during order creation or updates.
+     - **Review Service**: Likely to update reviews related to the order.
+     - **Notification Service**: For notifying users about order status.
+   - **Receives** messages from:
+     - **Users Service**: For user-related data during order creation.
+     - **Gig Service**: To fetch gig details for orders.
+
+### 7. **Review Service**
+   - **Sends** messages to:
+     - **Users Service**: Possibly to access user data when reviews are left.
+     - **Order Service**: To fetch order-related data for reviews.
+   - **Receives** from:
+     - **Users Service**: To fetch user data for reviews.
+     - **Order Service**: To fetch order data.
+
+---
