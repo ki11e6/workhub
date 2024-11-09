@@ -4,10 +4,10 @@ This is a **freelance marketplace** where sellers can create gigs and buyers can
 
 ## Project Overview
 
-This project allows:
-- **Sellers** to create and manage gigs.
-- **Buyers** to search, filter, and purchase gigs or request custom gigs.
-- **Admin** users to monitor and manage users, gigs, and transactions.
+- **Sellers** can create and manage gigs.
+- **Buyers** can search for gigs, filter them, and purchase gigs or request custom gigs.
+- **Users** start as buyers but can also become sellers by creating a seller profile.
+- **Admin** users manage users, gigs, and transactions.
 
 The platform is designed for high scalability and performance using AWS infrastructure and modern tools like Kubernetes, Elasticsearch, Prometheus, and Grafana.
 
@@ -17,11 +17,37 @@ The project is built with a **microservices architecture** deployed on **Amazon 
 
 ### Microservices
 
-- **User Service**: Handles user registration, authentication, and management.
-- **Gig Service**: Manages gig creation, editing, listing, and searching.
-- **Order Service**: Processes orders, including purchases of gigs and custom offers.
-- **Payment Service**: Integrates with payment gateways to handle transactions.
-- **Notification Service**: Sends notifications via email, SMS, or platform messages.
+1. **API Gateway**:
+   - Acts as the entry point to the microservices.
+   - Handles communication between the client and the various microservices.
+
+2. **Notification Service**:
+   - Sends email notifications for key events (e.g., account confirmation, gig purchases, order completions).
+   - Email notifications are the only form of notification used in this application.
+
+3. **Authentication Service**:
+   - Manages user authentication.
+   - Supports login via email and username.
+   - Handles account registration and user login.
+
+4. **User Service**:
+   - Manages both **buyers** and **sellers** profiles.
+   - Users are created as buyers by default, with the option to become sellers.
+
+5. **Gig Service**:
+   - Handles CRUD operations for gigs (create, retrieve, update, delete).
+   - Integrates with **Elasticsearch** for powerful search functionality.
+
+6. **Chat Service**:
+   - Manages messaging between buyers and sellers for communication.
+
+7. **Order and Payment Service**:
+   - Handles the purchasing of gigs and custom offers.
+   - Integrated with **Stripe** for payment processing.
+   - Manages orders and payments in a unified service for simplicity.
+
+8. **Reviews and Ratings Service**:
+   - Allows buyers to rate sellers and sellers to rate buyers after transactions.
 
 ### Technologies
 
@@ -45,8 +71,11 @@ The project is built with a **microservices architecture** deployed on **Amazon 
    - Buyers can purchase gigs via the Order Service. The Payment Service handles the transaction, and the order status is updated in the database.
 
 3. **Real-Time Monitoring**:
-   - Prometheus monitors service metrics such as CPU usage, memory consumption, and request latencies. Alerts are triggered for any issues, such as service failures or slow response times.
-   - Grafana visualizes this data, showing the overall health of the system.
+   - **Prometheus** tracks the latency of services like the Gig Service and Order Service, ensuring they respond in a timely manner.
+   - If a service becomes slow or unresponsive, **Prometheus** sends an alert via its alerting system.
+
+4. **Analytics and Insights**:
+   - **Grafana** displays a real-time dashboard that shows key metrics like the number of gigs sold, most popular categories, and system performance.
 
 ### AWS Services
 
@@ -62,8 +91,8 @@ The project is built with a **microservices architecture** deployed on **Amazon 
 - **Scalable Microservices Architecture**: Each service can be scaled independently based on traffic.
 - **Search with Elasticsearch**: Buyers can search and filter gigs using Elasticsearch for real-time, fast search capabilities.
 - **Real-Time Monitoring**: Prometheus and Grafana provide full observability and alerting for the system, ensuring uptime and performance.
-- **Secure Transactions**: The platform integrates with a secure payment gateway, handling payments and refunds with AWS-managed security.
-- **Secure and Reliable**: The platform uses IAM for role-based access control and ACM for secure SSL certificates.
+- **Secure Transactions**: The platform integrates with **Stripe** to handle payments and refunds with AWS-managed security.
+- **Secure and Reliable**: The platform uses **IAM** for role-based access control and **ACM** for secure SSL certificates.
 
 ## Getting Started
 
@@ -92,9 +121,3 @@ The project is built with a **microservices architecture** deployed on **Amazon 
 
 4. **Configure Alerts**:
    - Use Prometheus alert manager to trigger notifications when service performance drops or errors occur.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
