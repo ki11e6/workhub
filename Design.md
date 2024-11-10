@@ -34,6 +34,77 @@ The project follows a microservices architecture, where each service is responsi
 - **Monitoring**: **Kibana** is used for monitoring application logs and system performance.
 
 ---
+### 1. **API Gateway**
+   - Acts as the entry point for all client requests.
+   - Handles communication between the client and microservices using **HTTP/HTTPS** and **Socket.IO** for real-time updates.
+   - Routes requests to various microservices (Notification, Auth, Users, Gig, Chat, Order, Review).
+   - Responsible for managing authentication, rate limiting, and load balancing.
+
+### 2. **Notification Service**
+   - Manages notifications (e.g., email, SMS, push notifications) for user-related events.
+   - Uses **RabbitMQ** for message queuing.
+   - Communicates with other services over **HTTP/HTTPS**.
+   - Likely interacts with **Auth Service**, **Order Service**, and **Chat Service** to notify users about actions like authentication, order updates, or messages.
+
+### 3. **Auth Service**
+   - Manages user authentication and authorization.
+   - Stores user credentials and session data in **MySQL**.
+   - Uses **RabbitMQ** for messaging.
+   - Communicates with the **API Gateway** and other services for verifying user credentials during requests.
+
+### 4. **Users Service**
+   - Manages user profiles and user-related data.
+   - Stores data in **MongoDB** and caches user-related information in **Redis**.
+   - Uses **RabbitMQ** for messaging between services.
+   - Interacts with other services, like the **Gig Service** and **Order Service**, to link user profiles with their respective gigs, orders, and reviews.
+
+### 5. **Gig Service**
+   - Handles the creation, update, and management of user gigs (services offered by sellers).
+   - Stores gig data in **MongoDB**.
+   - Uses **RabbitMQ** to communicate with other services.
+   - Provides gig information for **Order Service** and other relevant services.
+
+### 6. **Chat Service**
+   - Manages real-time messaging between buyers and sellers.
+   - Uses **MongoDB** for chat storage.
+   - Communicates with other services, particularly the **Notification Service**, to notify users of new messages.
+   - Relies on **Socket.IO** for real-time updates.
+
+### 7. **Order Service**
+   - Handles all order-related processes, including order creation, payment, and status updates.
+   - Stores order data in **MongoDB** and manages message queues with **RabbitMQ**.
+   - Provides information to other services like the **Notification Service** for order confirmation emails or messages.
+
+### 8. **Review Service**
+   - Manages the creation, updating, and retrieval of reviews and ratings between buyers and sellers.
+   - Stores data in **PostgreSQL** for structured review data.
+   - Uses **RabbitMQ** for messaging with other services.
+   - Provides reviews linked to orders and gigs.
+
+### 9. **Database Layer**
+   - Various databases are used to manage different types of data:
+     - **MySQL**: For authentication data.
+     - **MongoDB**: For user profiles, gigs, chats, and orders.
+     - **PostgreSQL**: For reviews and ratings.
+     - **Redis**: For caching frequently accessed data (e.g., user sessions).
+
+### 10. **Message Queueing (RabbitMQ)**
+   - RabbitMQ is used extensively across services to ensure reliable and scalable messaging between microservices.
+   - It helps decouple services, making the architecture more resilient to failures and allowing for better scaling.
+
+### 11. **Real-time Communication (Socket.IO)**
+   - **Socket.IO** is used for real-time updates, primarily for features like chat or notifications that require instant updates to the user interface.
+
+### 12. **Elasticsearch/Kibana**
+   - Elasticsearch is likely used for indexing gig and order data for fast search and retrieval.
+   - Kibana is used for monitoring, visualizing logs, and querying Elasticsearch data.
+
+### Communication Flow:
+- **Clients** interact with the system through the **API Gateway**.
+- Each microservice handles specific functionality, and they communicate internally via **RabbitMQ** and externally with databases like MongoDB, MySQL, and PostgreSQL.
+- **Elasticsearch** and **Kibana** provide search and observability features for the system.
+
+---
 # Inter Process Communication
 
 
