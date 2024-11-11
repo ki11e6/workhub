@@ -121,3 +121,34 @@ The project is built with a **microservices architecture** deployed on **Amazon 
 
 4. **Configure Alerts**:
    - Use Prometheus alert manager to trigger notifications when service performance drops or errors occur.
+
+
+
+### Docker Compose Commands
+
+- **`docker compose up -d redis mongodb mysql postgresql rabbitmq elasticsearch kibana`**
+  Starts the specified services (Redis, MongoDB, MySQL, PostgreSQL, RabbitMQ, Elasticsearch, Kibana) in detached mode (running in the background).
+
+- **`docker compose stop redis mongodb mysql postgresql rabbitmq elasticsearch kibana`**
+  Stops the running containers for the specified services without removing them.
+
+- **`docker compose down -v redis mongodb mysql postgresql rabbitmq elasticsearch kibana`**
+  Stops and removes the specified containers, networks, and associated volumes.
+
+- **`docker compose rm redis mongodb mysql postgresql rabbitmq elasticsearch kibana`**
+  Removes stopped containers for the specified services without confirmation.
+
+- **`docker compose rm -f redis mongodb mysql postgresql rabbitmq elasticsearch kibana`**
+  Forcefully removes the stopped containers for the specified services without prompting for confirmation.
+
+### Docker System Cleanup Commands
+
+- **`docker system prune`**
+  Cleans up unused containers, networks, images (dangling), and volumes. It will not remove any running containers or associated resources.
+
+- **`docker system prune -a`**
+  Removes all unused containers, networks, and images (both dangling and unreferenced), but does not remove running containers.
+
+- **`docker image prune -a`**
+  Removes all unused Docker images (dangling and unreferenced), which are not associated with any running or stopped containers.
+
