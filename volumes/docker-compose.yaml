@@ -24,10 +24,10 @@ services:
     image: mysql:latest
     restart: always
     environment:
-      - MYSQL_USER=workhub
-      - MYSQL_DATABASE=workhub_auth
-      - MYSQL_ROOT_PASSWORD=api
-      - MYSQL_PASSWORD=api
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
@@ -40,9 +40,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=workhub
-      - POSTGRES_PASSWORD=workhub
-      - POSTGRES_DB=workhub
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - ./docker-volumes/postgresql:/var/lib/postgresql/data
 
@@ -59,18 +59,18 @@ services:
     container_name: elasticsearch_container
     restart: always
     environment:
-      ES_JAVA_OPTS: -Xms1g -Xmx1g
-      bootstrap.memory_lock: "true"
-      discovery.type: single-node
-      network.host: 0.0.0.0
-      transport.host: 127.0.0.1
-      http.host: 0.0.0.0
-      xpack.security.enabled: "true"
-      xpack.security.authc.api_key.enabled: "true"
-      xpack.monitoring.collection.enabled: "true"
-      xpack.security.enrollment.enabled: "true"
-      xpack.security.authc.token.enabled: "true"
-      ELASTIC_PASSWORD: admin1234
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - bootstrap.memory_lock="true"
+      - discovery.type=single-node
+      - network.host=0.0.0.0
+      - transport.host=127.0.0.1
+      - http.host=0.0.0.0
+      - xpack.security.enabled="true"
+      - xpack.security.authc.api_key.enabled="true"
+      - xpack.monitoring.collection.enabled="true"
+      - xpack.security.enrollment.enabled="true"
+      - xpack.security.authc.token.enabled="true"
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     ports:
       - "9200:9200" # HTTP
       - "9300:9300" # Transport
@@ -85,9 +85,9 @@ services:
     restart: always
     environment:
       - ELASTICSEARCH_HOSTS=["http://elasticsearch_container:9200"]
-      - ELASTICSEARCH_USERNAME=kibana_system
-      - ELASTICSEARCH_PASSWORD=kibana
-      - ELASTICSEARCH_SERVICEACCOUNT_TOKEN=AAEAAWVsYXN0aWMva2liYW5hL3dvcmtodWIta2liYW5hOkZsY0V5aEQtUWlxS2RTOW95UWZwN1E
+      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
+      - ELASTICSEARCH_SERVICEACCOUNT_TOKEN=${ELASTICSEARCH_SERVICEACCOUNT_TOKEN}
       - XPACK_FLEET_AGENTS_ELASTICSEARCH_HOSTS=["http://elasticsearch_container:9200"]
     ports:
       - "5601:5601"
