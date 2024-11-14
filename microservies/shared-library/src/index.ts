@@ -71,3 +71,23 @@ export {
 } from './interfaces/seller.interface';
 export { IEmailLocals } from './interfaces/email.interface';
 export { uploads, videoUpload } from './cloudinary-upload';
+export {
+  IErrorResponse,
+  IError,
+  CustomError,
+  BadRequestError,
+  NotFoundError,
+  NotAuthorizedError,
+  FileTooLargeError,
+  ServerError,
+  ErrnoException,
+} from './error-handler';
+export { verifyGatewayRequest } from './gateway-middleware';
+export { winstonLogger } from './logger';
+export {
+  firstLetterUppercase,
+  toLowerCase,
+  toUpperCase,
+  isEmail,
+  isDataURL,
+} from './helpers';
