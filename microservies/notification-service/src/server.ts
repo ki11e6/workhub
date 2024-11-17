@@ -3,13 +3,16 @@ import { Logger } from 'winston';
 import { winstonLogger } from '@ki11e6/workhub-helper-library';
 import http from 'http';
 import 'express-async-errors';
+import { healthRoutes } from '@notifications/routes';
 import { config } from '@notifications/config';
+import { checkConnection } from '@notifications/elasticsearch';
 
 const SERVER_PORT = 4001;
-const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notification-service', 'debug');
+const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notificationService-server', 'debug');
 
 export function start(app: Application): void {
   startServer(app);
+  app.use('', healthRoutes());
   startQueues();
   startElasticSearch();
 }
@@ -22,10 +25,7 @@ async function startQueues(): Promise<void> {
 }
 
 function startElasticSearch(): void {
-  try {
-  } catch (error) {
-    log.log('error', 'Notification-service startElasticSearch() method: ', error);
-  }
+  checkConnection();
 }
 
 function startServer(app: Application): void {
