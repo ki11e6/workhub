@@ -8,7 +8,7 @@ import { healthRoutes } from '@notifications/routes';
 import { config } from '@notifications/config';
 import { checkConnection } from '@notifications/elasticsearch';
 import { createConnection } from '@notifications/queues/connection';
-import { consumerAuthEmailMessages } from '@notifications/queues/email.consumer';
+import { consumeOrderEmailMessages, consumeAuthEmailMessages } from '@notifications/queues/email.consumer';
 
 const SERVER_PORT = 4001;
 const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notificationService-server', 'debug');
@@ -22,16 +22,27 @@ export function start(app: Application): void {
 
 async function startQueues(): Promise<void> {
   const emailChannel: Channel = (await createConnection()) as Channel;
-  await consumerAuthEmailMessages(emailChannel);
+  await consumeAuthEmailMessages(emailChannel);
+  await consumeOrderEmailMessages(emailChannel);
   //test email queue
-  await emailChannel.assertExchange('workhub-email-notification', 'direct');
+  await emailChannel.assertExchange('workhub-authemail-notification', 'direct');
   const message = JSON.stringify({
     subject: 'Welcome to Workhub',
     body: 'You have successfully created your account',
     from: 'Workhub',
     to: 'l3WzF@example.com'
   });
-  emailChannel.publish('workhub-email-notification', 'auth.email', Buffer.from(message));
+  emailChannel.publish('workhub-authemail-notification', 'auth-email', Buffer.from(message));
+
+  //test order queue
+  await emailChannel.assertExchange('workhub-orderemail-notification', 'direct');
+  const orderMessage = JSON.stringify({
+    subject: 'New Order',
+    body: 'You have a new order',
+    from: 'Workhub',
+    to: 'l3WzF@example.com'
+  });
+  emailChannel.publish('workhub-orderemail-notification', 'order-email', Buffer.from(orderMessage));
 }
 
 function startElasticSearch(): void {
