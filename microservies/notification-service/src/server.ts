@@ -2,10 +2,13 @@ import { Application } from 'express';
 import { Logger } from 'winston';
 import { winstonLogger } from '@ki11e6/workhub-helper-library';
 import http from 'http';
+import { Channel } from 'amqplib';
 import 'express-async-errors';
 import { healthRoutes } from '@notifications/routes';
 import { config } from '@notifications/config';
 import { checkConnection } from '@notifications/elasticsearch';
+import { createConnection } from '@notifications/queues/connection';
+import { consumerAuthEmailMessages } from '@notifications/queues/email.consumer';
 
 const SERVER_PORT = 4001;
 const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notificationService-server', 'debug');
@@ -18,10 +21,17 @@ export function start(app: Application): void {
 }
 
 async function startQueues(): Promise<void> {
-  try {
-  } catch (error) {
-    log.log('error', 'Notification-service startQueues() method: ', error);
-  }
+  const emailChannel: Channel = (await createConnection()) as Channel;
+  await consumerAuthEmailMessages(emailChannel);
+  //test email queue
+  await emailChannel.assertExchange('workhub-email-notification', 'direct');
+  const message = JSON.stringify({
+    subject: 'Welcome to Workhub',
+    body: 'You have successfully created your account',
+    from: 'Workhub',
+    to: 'l3WzF@example.com'
+  });
+  emailChannel.publish('workhub-email-notification', 'auth.email', Buffer.from(message));
 }
 
 function startElasticSearch(): void {
