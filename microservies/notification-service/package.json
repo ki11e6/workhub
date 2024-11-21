@@ -21,7 +21,7 @@
     "@types/email-templates": "^10.0.4",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
-    "@types/nodemailer": "^6.4.16",
+    "@types/nodemailer": "^6.4.17",
     "@types/shelljs": "^0.8.15",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",
@@ -36,7 +36,7 @@
     "tsconfig-paths": "^4.2.0"
   },
   "dependencies": {
-    "@elastic/elasticsearch": "^8.16.1",
+    "@elastic/elasticsearch": "^8.16.2",
     "@ki11e6/workhub-helper-library": "^0.0.3",
     "@sendgrid/mail": "^8.1.4",
     "amqplib": "^0.10.4",
