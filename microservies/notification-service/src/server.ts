@@ -27,22 +27,23 @@ async function startQueues(): Promise<void> {
   //test email queue
   await emailChannel.assertExchange('workhub-authemail-notification', 'direct');
   const message = JSON.stringify({
-    subject: 'Welcome to Workhub',
-    body: 'You have successfully created your account',
-    from: 'Workhub',
-    to: 'l3WzF@example.com'
+    receiverEmail: 'sharath.surendran.m@gmail.com',
+    username: 'sharath',
+    verifyLink: 'test',
+    resetLink: 'test',
+    template: 'verifyEmail'
   });
   emailChannel.publish('workhub-authemail-notification', 'auth-email', Buffer.from(message));
 
   //test order queue
-  await emailChannel.assertExchange('workhub-orderemail-notification', 'direct');
-  const orderMessage = JSON.stringify({
-    subject: 'New Order',
-    body: 'You have a new order',
-    from: 'Workhub',
-    to: 'l3WzF@example.com'
-  });
-  emailChannel.publish('workhub-orderemail-notification', 'order-email', Buffer.from(orderMessage));
+  // await emailChannel.assertExchange('workhub-orderemail-notification', 'direct');
+  // const orderMessage = JSON.stringify({
+  //   subject: 'New Order',
+  //   body: 'You have a new order',
+  //   from: 'Workhub',
+  //   to: 'l3WzF@example.com'
+  // });
+  // emailChannel.publish('workhub-orderemail-notification', 'order-email', Buffer.from(orderMessage));
 }
 
 function startElasticSearch(): void {

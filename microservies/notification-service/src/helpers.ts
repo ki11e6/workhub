@@ -10,6 +10,7 @@ const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'mailTransport
 
 async function emailTemplates(template: string, receiver: string, locals: IEmailLocals): Promise<void> {
   try {
+    //nodemailer createTransport
     const smtpTransport: Transporter = nodemailer.createTransport({
       host: 'smtp.ethereal.email',
       port: 587,
@@ -18,6 +19,7 @@ async function emailTemplates(template: string, receiver: string, locals: IEmail
         pass: config.SENDER_EMAIL_PASSWORD
       }
     });
+    //email-templates instance
     const email: Email = new Email({
       message: {
         from: `Workhub App <${config.SENDER_EMAIL}>`
@@ -38,7 +40,7 @@ async function emailTemplates(template: string, receiver: string, locals: IEmail
         }
       }
     });
-
+    //send email
     await email.send({
       template: path.join(__dirname, '..', 'src/emails', template),
       message: { to: receiver },

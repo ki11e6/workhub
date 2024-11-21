@@ -1,6 +1,6 @@
 import path from 'path';
 import Email from 'email-templates';
-import sgMail from '@sendgrid/mail';
+import sgMail, { MailDataRequired } from '@sendgrid/mail';
 import { config } from '@notifications/config';
 import { Logger } from 'winston';
 import { IEmailLocals, winstonLogger } from '@ki11e6/workhub-helper-library';
@@ -11,7 +11,7 @@ const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'mailTransport
 sgMail.setApiKey(config.SENDGRID_API_KEY!);
 
 // Email Service Function
-async function sendEmail(template: string, receiver: string, locals: IEmailLocals): Promise<void> {
+async function sendGridEmail(template: string, receiver: string, locals: IEmailLocals): Promise<void> {
   try {
     // Initialize the Email instance
     const email = new Email({
@@ -43,16 +43,14 @@ async function sendEmail(template: string, receiver: string, locals: IEmailLocal
       message: { to: receiver },
       locals
     });
-
     // Use SendGrid to send the rendered email
-    const { html, subject } = emailResponse;
-    const msg = {
+    const msg: MailDataRequired = {
       to: receiver,
-      from: process.env.SENDGRID_FROM_EMAIL || 'no-reply@workhub.com',
-      subject,
-      html // HTML content from email-templates
+      from: config.SENDGRID_FROM_EMAIL!,
+      subject: emailResponse.originalMessage.subject,
+      html: emailResponse.originalMessage.html,
+      text: 'Something Went Wrong' // Optional fallback for text-only clients
     };
-
     await sgMail.send(msg);
     log.info(`Email sent to ${receiver} successfully`);
   } catch (error) {
@@ -60,4 +58,4 @@ async function sendEmail(template: string, receiver: string, locals: IEmailLocal
   }
 }
 
-export { sendEmail };
+export { sendGridEmail };

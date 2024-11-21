@@ -1,8 +1,9 @@
 import { Channel, ConsumeMessage } from 'amqplib';
-import { winstonLogger } from '@ki11e6/workhub-helper-library';
+import { IEmailLocals, winstonLogger } from '@ki11e6/workhub-helper-library';
 import { config } from '@notifications/config';
 import { Logger } from 'winston';
 import { createConnection } from '@notifications/queues/connection';
+import { sendEmail } from '@notifications/queues/mail.transport';
 
 const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notificationService-emailConsumer', 'debug');
 
@@ -21,9 +22,16 @@ async function consumeAuthEmailMessages(channel: Channel): Promise<void> {
     });
     await channel.bindQueue(workhubQueue.queue, exchangeName, routingKey);
     await channel.consume(workhubQueue.queue, async (msg: ConsumeMessage | null) => {
-      console.log(JSON.parse(msg!.content.toString()));
-      //TODO: send email
-      // channel.ack(msg!);
+      const { receiverEmail, username, verifyLink, resetLink, template } = JSON.parse(msg!.content.toString());
+      const locals: IEmailLocals = {
+        appLink: `${config.CLIENT_URL}`,
+        appIcon: 'https://i.ibb.co/j4pfFWh/workhubbanner.png',
+        username,
+        verifyLink,
+        resetLink
+      };
+      await sendEmail(template, receiverEmail, locals);
+      channel.ack(msg!);
     });
   } catch (error) {
     log.log('error', 'Notification-service EmailConsumer consumerAuthEmailMessages() method error ', error);
@@ -45,9 +53,65 @@ async function consumeOrderEmailMessages(channel: Channel): Promise<void> {
     });
     await channel.bindQueue(workhubQueue.queue, exchangeName, routingKey);
     await channel.consume(workhubQueue.queue, async (msg: ConsumeMessage | null) => {
-      console.log(JSON.parse(msg!.content.toString()));
-      //TODO: send email
-      // channel.ack(msg!);
+      const {
+        receiverEmail,
+        username,
+        template,
+        sender,
+        offerLink,
+        amount,
+        buyerUsername,
+        sellerUsername,
+        title,
+        description,
+        deliveryDays,
+        orderId,
+        orderDue,
+        requirements,
+        orderUrl,
+        originalDate,
+        newDate,
+        reason,
+        subject,
+        header,
+        type,
+        message,
+        serviceFee,
+        total
+      } = JSON.parse(msg!.content.toString());
+      const locals: IEmailLocals = {
+        appLink: `${config.CLIENT_URL}`,
+        appIcon: 'https://i.ibb.co/j4pfFWh/workhubbanner.png',
+        username,
+        sender,
+        offerLink,
+        amount,
+        buyerUsername,
+        sellerUsername,
+        title,
+        description,
+        deliveryDays,
+        orderId,
+        orderDue,
+        requirements,
+        orderUrl,
+        originalDate,
+        newDate,
+        reason,
+        subject,
+        header,
+        type,
+        message,
+        serviceFee,
+        total
+      };
+      if (template === 'orderPlaced') {
+        await sendEmail('orderPlaced', receiverEmail, locals);
+        await sendEmail('orderReceipt', receiverEmail, locals);
+      } else {
+        await sendEmail(template, receiverEmail, locals);
+      }
+      channel.ack(msg!);
     });
   } catch (error) {
     log.log('error', 'Notification-service EmailConsumer consumeOrderEmailMessages() method error ', error);
