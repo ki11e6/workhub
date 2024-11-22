@@ -22,13 +22,14 @@ async function consumeAuthEmailMessages(channel: Channel): Promise<void> {
     });
     await channel.bindQueue(workhubQueue.queue, exchangeName, routingKey);
     await channel.consume(workhubQueue.queue, async (msg: ConsumeMessage | null) => {
-      const { receiverEmail, username, verifyLink, resetLink, template } = JSON.parse(msg!.content.toString());
+      const { receiverEmail, username, verifyLink, resetLink, template, otp } = JSON.parse(msg!.content.toString());
       const locals: IEmailLocals = {
         appLink: `${config.CLIENT_URL}`,
         appIcon: 'https://i.ibb.co/j4pfFWh/workhubbanner.png',
         username,
         verifyLink,
-        resetLink
+        resetLink,
+        otp
       };
       await sendEmail(template, receiverEmail, locals);
       channel.ack(msg!);
@@ -77,7 +78,8 @@ async function consumeOrderEmailMessages(channel: Channel): Promise<void> {
         type,
         message,
         serviceFee,
-        total
+        total,
+        otp
       } = JSON.parse(msg!.content.toString());
       const locals: IEmailLocals = {
         appLink: `${config.CLIENT_URL}`,
@@ -103,7 +105,8 @@ async function consumeOrderEmailMessages(channel: Channel): Promise<void> {
         type,
         message,
         serviceFee,
-        total
+        total,
+        otp
       };
       if (template === 'orderPlaced') {
         await sendEmail('orderPlaced', receiverEmail, locals);

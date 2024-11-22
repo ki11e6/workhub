@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "^8.16.2",
-    "@ki11e6/workhub-helper-library": "^0.0.3",
+    "@ki11e6/workhub-helper-library": "^0.0.4",
     "@sendgrid/mail": "^8.1.4",
     "amqplib": "^0.10.4",
     "dotenv": "^16.4.5",

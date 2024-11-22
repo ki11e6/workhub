@@ -23,7 +23,7 @@ export function uploads(
         result: UploadApiResponse | undefined
       ) => {
         if (error) resolve(error);
-        if (result) resolve(result);
+        resolve(result);
       }
     );
   });
