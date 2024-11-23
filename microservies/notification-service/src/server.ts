@@ -24,6 +24,16 @@ async function startQueues(): Promise<void> {
   const emailChannel: Channel = (await createConnection()) as Channel;
   await consumeAuthEmailMessages(emailChannel);
   await consumeOrderEmailMessages(emailChannel);
+  //test mail
+  // await emailChannel.assertExchange('workhub-authemail-notification', 'direct');
+  // const message = JSON.stringify({
+  //   receiverEmail: 'sharath.surendran.m@gmail.com',
+  //   username: 'sharath',
+  //   verifyLink: 'test',
+  //   resetLink: 'test',
+  //   template: 'otpEmail'
+  // });
+  // emailChannel.publish('workhub-authemail-notification', 'auth-email', Buffer.from(message));
 }
 
 function startElasticSearch(): void {

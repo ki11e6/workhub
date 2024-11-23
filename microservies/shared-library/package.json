@@ -1,7 +1,7 @@
 {
   "version": "0.0.4",
   "license": "MIT",
-  "description": "Helpers library for Jobber app",
+  "description": "Helpers library for Workhub app",
   "scripts": {
     "build": "npm run build:cjs && npm run build:esm && tsc --outDir build/src && node scripts/build-package.js",
     "build:cjs": "NODE_ENV=production BABEL_ENV=cjs babel src --presets=./scripts/babel-preset.js --extensions .ts,.tsx --ignore src/**/*.specs.tsx --out-dir build/cjs --source-maps",

@@ -1,17 +1,18 @@
-import path from 'path';
+import { IEmailLocals, winstonLogger } from '@ki11e6/workhub-helper-library';
+import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import Email from 'email-templates';
-import sgMail, { MailDataRequired } from '@sendgrid/mail';
+import path from 'path';
 import { config } from '@notifications/config';
 import { Logger } from 'winston';
-import { IEmailLocals, winstonLogger } from '@ki11e6/workhub-helper-library';
 
-const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'mailTransportHelper-sendgrid', 'debug');
-
-// Set up SendGrid API Key
-sgMail.setApiKey(config.SENDGRID_API_KEY!);
+const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'mailTransportHelper-mailerSend', 'debug');
+// MailerSend API setup
+const mailerSend = new MailerSend({
+  apiKey: config.MAILERSEND_API_KEY! // Set your API key in an environment variable
+});
 
 // Email Service Function
-async function sendGridEmail(template: string, receiver: string, locals: IEmailLocals): Promise<void> {
+async function sendMailerSendEmail(template: string, receiver: string, locals: IEmailLocals): Promise<void> {
   try {
     // Initialize the Email instance
     const email = new Email({
@@ -43,19 +44,23 @@ async function sendGridEmail(template: string, receiver: string, locals: IEmailL
       message: { to: receiver },
       locals
     });
-    // Use SendGrid to send the rendered email
-    const msg: MailDataRequired = {
-      to: receiver,
-      from: config.SENDGRID_FROM_EMAIL!,
-      subject: emailResponse.originalMessage.subject,
-      html: emailResponse.originalMessage.html,
-      text: 'Something Went Wrong' // Optional fallback for text-only clients
-    };
-    await sgMail.send(msg);
+
+    const sentFrom = new Sender(config.SENDER_EMAIL!, locals.sellerUsername);
+
+    const recipients = [new Recipient(receiver, locals.buyerUsername)];
+
+    const emailParams = new EmailParams()
+      .setFrom(sentFrom)
+      .setTo(recipients)
+      .setSubject(emailResponse.originalMessage.subject)
+      .setHtml(emailResponse.originalMessage.html);
+
+    await mailerSend.email.send(emailParams);
+
     log.info(`Email sent to ${receiver} successfully`);
   } catch (error) {
     log.error(error);
   }
 }
 
-export { sendGridEmail };
+export { sendMailerSendEmail };
